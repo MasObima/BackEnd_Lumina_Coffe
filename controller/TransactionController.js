@@ -1,9 +1,22 @@
 const midtransClient = require('midtrans-client');
 const Transaction = require('../models/Transaction');
+const { default: mongoose } = require('mongoose');
+
+exports.getTransaction = async (req, res) =>{
+    try{
+        const transaction = await Transaction.find()
+        res.status(200).json(transaction)
+    }catch(error){
+        res.status(500).json({message: error.message})
+    }
+}
 
 exports.createTransaction = async (req, res) => {
     try {
         const { first_name, amount, product_id } = req.body;
+
+        const validProductId = Number(product_id);
+
         
         let snap = new midtransClient.Snap({
             isProduction: false,
@@ -30,7 +43,7 @@ exports.createTransaction = async (req, res) => {
 
         const newTransaction = new Transaction({
             ...req.body,
-            Midtrans_url: transactionUrl,
+            midtrans_url: transactionUrl,
             transaction_id: order_id
         });
 

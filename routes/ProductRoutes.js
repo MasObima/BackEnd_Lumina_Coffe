@@ -1,5 +1,5 @@
 const express = require('express')
-const multer = require('multer')
+const upload = require('../config/multer')
 const {
     getProducts,
     createProduct,
@@ -7,8 +7,6 @@ const {
     deleteProduct,
     updateProduct
 } = require ('../controller/ProductController')
-
-const upload = multer({dest: '/uploads/products'})
 
 const router = express.Router()
 

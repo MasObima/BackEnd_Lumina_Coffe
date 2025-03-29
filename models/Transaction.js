@@ -10,11 +10,10 @@ const userSchema = new mongoose.Schema({
     amount: {
         type: Number,
     },
-    product_id: {
-        type: Number,
-    },
+    product_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+
     midtrans_url: {
-        type: Number,
+        type: String,
     }
 })
 
