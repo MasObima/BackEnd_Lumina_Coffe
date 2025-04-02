@@ -13,6 +13,13 @@ require('dotenv').config();
 //     }
 // });
 
+// const fileFilter = (req, file, cb) => {
+//     if (file.mimetype.startsWith('image/')) {
+//         cb(null, true);
+//     } else {
+//         cb(new Error('File harus berupa gambar!'), false);
+//     }
+// };
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
@@ -22,13 +29,6 @@ const storage = new CloudinaryStorage({
     },
   });
 
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-        cb(null, true);
-    } else {
-        cb(new Error('File harus berupa gambar!'), false);
-    }
-};
 
 const upload = multer({ storage, fileFilter });
 
