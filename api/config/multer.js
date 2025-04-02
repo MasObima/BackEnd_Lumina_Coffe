@@ -3,16 +3,22 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 require('dotenv').config();
 
-// Konfigurasi penyimpanan menggunakan Cloudinary
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'product', // Nama folder di Cloudinary
-    allowed_formats: ['jpg', 'png', 'jpeg'], // Format gambar yang diizinkan
-  },
-});
+    cloudinary: cloudinary,
+    params: {
+      folder: 'product', 
+      allowed_formats: ['jpg', 'png', 'jpeg'],
+    },
+  });
 
-// Middleware multer untuk menangani upload
-const upload = multer({ storage });
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+    } else {
+        cb(new Error('File harus berupa gambar!'), false);
+    }
+};
+
+const upload = multer({ storage, fileFilter });
 
 module.exports = upload;
