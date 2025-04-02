@@ -1,5 +1,7 @@
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
-const path = require('path');
+require('dotenv').config();
 
 // Konfigurasi penyimpanan file
 // const storage = multer.diskStorage({
@@ -11,7 +13,15 @@ const path = require('path');
 //     }
 // });
 
-// Filter tipe file yang boleh diunggah
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: 'product', 
+      allowed_formats: ['jpg', 'png', 'jpeg'],
+    },
+  });
+
 const fileFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
         cb(null, true);
