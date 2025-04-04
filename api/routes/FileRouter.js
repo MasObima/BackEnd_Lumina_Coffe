@@ -1,14 +1,10 @@
-const express = require('express')
-const path = require("path");
-const multer = require('multer')
-const {uploadFiles} = require('../controller/FileController')
+const express = require('express');
+const { uploadFiles } = require('../controller/FileController');
+const upload = require('../config/multer'); // ✅ Import multer dengan CloudinaryStorage
 
-const uploadPath = path.join(__dirname, "uploads"); // ✅ Path relatif
-const upload = multer({dest: uploadPath})
+const router = express.Router();
 
-const router =  express.Router()
+// ✅ Pakai middleware CloudinaryStorage
+router.post('/upload', upload.single('file'), uploadFiles);
 
-router.post('/upload', upload.single('file'), uploadFiles)
-
-
-module.exports = router
+module.exports = router;
