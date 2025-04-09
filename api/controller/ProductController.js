@@ -25,23 +25,31 @@ exports.getDetailProduct = async (req, res) =>{
     }
 }
 
-exports.createProduct = async (req, res) =>{
-    try{
-       const result = await cloudinary.uploader.upload(req.file.path, {
+exports.createProduct = async (req, res) => {
+    try {
+      if (!req.file || !req.file.path) {
+        return res.status(400).json({ message: 'File thumbnail tidak ditemukan.' });
+      }
+  
+      const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "product"
-       })
-       const product = new Product({
+      });
+  
+      const product = new Product({
         ...req.body,
-        thumbnail: result?.secure_url,
-        cloudinaryId: result?.public_id
-       })
-       await product.save()
-
-       res.status(201).json(product)
-   }catch(error){
-        res.status(400).json({message: error.message})
-   }
-}
+        thumbnail: result.secure_url,
+        cloudinaryId: result.public_id
+      });
+  
+      await product.save();
+      res.status(201).json(product);
+  
+    } catch (error) {
+      console.error('Error saat createProduct:', error);
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
 
 
 exports.deleteProduct = async (req, res) => {
@@ -50,17 +58,14 @@ exports.deleteProduct = async (req, res) => {
 
         const product = await Product.findById(id);
 
-        // Jika produk tidak ditemukan, kirim respons 404
         if (!product) {
             return res.status(404).json({ error: "Produk tidak ditemukan" });
         }
 
-        // Hapus gambar di Cloudinary jika ada
         if (product.cloudinaryId) {
             await cloudinary.uploader.destroy(product.cloudinaryId);
         }
 
-        // Hapus produk dari database
         await product.deleteOne();
 
         res.status(200).json({ message: "Produk berhasil dihapus" });
@@ -85,18 +90,15 @@ exports.updateProduct = async (req, res) => {
 
         let result;
         if (req.file) {
-            // Hapus gambar lama di Cloudinary jika ada
             if (product.cloudinaryId) {
                 await cloudinary.uploader.destroy(product.cloudinaryId);
             }
 
-            // Upload gambar baru ke Cloudinary (ke folder "product")
             result = await cloudinary.uploader.upload(req.file.path, {
                 folder: "product",
             });
         }
 
-        // Update produk
         const updatedProduct = await Product.findByIdAndUpdate(
             id,
             {
